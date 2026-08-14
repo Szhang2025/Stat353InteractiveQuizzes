@@ -187,7 +187,7 @@ footer{padding:36px 56px;color:var(--ink-dim);font-size:12px;border-top:1px soli
    CONFIG — set this to your deployed Google Apps Script Web App URL.
    See setup-instructions.md for how to create it.
 ========================================================================= */
-const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwtYXNeMINBqPDSf_NI2AKH8j4zSeGGTU8CoS4QtE_yJlL8_8Lqi_-daWphQz69f1j1xg/exec";
+const GAS_ENDPOINT = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
 
 /* =========================================================================
    COURSE CONTENT
@@ -570,11 +570,15 @@ function renderQuiz(ch) {
     <div class="quiz-sub">Select one answer per question, enter your name/ID, then submit. Your response is sent to the instructor's roster sheet.</div>
     ${qHtml}
     <div class="quiz-footer">
-      <input type="text" class="name-field" id="name-${ch.id}" placeholder="Full name or student ID">
+      <input type="text" class="name-field" id="name-${ch.id}" placeholder="Last 4 digits of student ID" maxlength="4" inputmode="numeric" pattern="[0-9]{4}">
       <button class="submit-btn" id="submit-${ch.id}">SUBMIT RESPONSES</button>
       <span class="status-msg" id="status-${ch.id}"></span>
     </div>
   `;
+
+  document.getElementById(`name-${ch.id}`).addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
+  });
 
   container.querySelectorAll('.opt').forEach(label => {
     label.addEventListener('click', () => {
@@ -592,8 +596,8 @@ function renderQuiz(ch) {
     const btn = document.getElementById(`submit-${ch.id}`);
     const scorePill = document.getElementById(`score-${ch.id}`);
 
-    if (!nameField.value.trim()) {
-      status.textContent = 'Enter your name or student ID first.';
+    if (!/^\d{4}$/.test(nameField.value.trim())) {
+      status.textContent = 'Enter the last 4 digits of your student ID (numbers only).';
       status.className = 'status-msg err';
       return;
     }
@@ -621,16 +625,20 @@ function renderQuiz(ch) {
     };
 
     try {
-      if (GAS_ENDPOINT.startsWith('http')) {
-        await fetch(GAS_ENDPOINT, {
-          method: 'POST',
-          mode: 'no-cors',           // Apps Script web apps don't return CORS headers
-          headers: {'Content-Type': 'text/plain'},
-          body: JSON.stringify(payload)
-        });
-      } else {
+      if (!GAS_ENDPOINT.startsWith('http')) {
+        status.textContent = 'Not sent — GAS_ENDPOINT is not configured in index.html yet.';
+        status.className = 'status-msg err';
+        btn.disabled = false;
         console.warn('GAS_ENDPOINT not configured — response not sent.', payload);
+        return;
       }
+
+      await fetch(GAS_ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',           // Apps Script web apps don't return CORS headers
+        headers: {'Content-Type': 'text/plain'},
+        body: JSON.stringify(payload)
+      });
 
       // reveal correct/incorrect styling locally
       container.querySelectorAll('.opts').forEach(optsDiv => {
