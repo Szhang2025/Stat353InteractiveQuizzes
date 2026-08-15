@@ -572,7 +572,7 @@ function renderQuiz(quiz, chapterId) {
     });
   });
   
-  // ==================== SUBMIT - FIXED VERSION ====================
+  // ==================== SUBMIT ====================
   document.getElementById(`submit-${chapterId}`).addEventListener('click', async () => {
     const nameField = document.getElementById(`name-${chapterId}`);
     const status = document.getElementById(`status-${chapterId}`);
@@ -607,11 +607,18 @@ function renderQuiz(quiz, chapterId) {
     console.log('📤 Sending payload:', payload);
     
     try {
-      // FIXED: Removed mode: 'no-cors', using proper JSON
+      // Content-Type must stay a CORS "simple" type (text/plain), or the
+      // browser sends a preflight OPTIONS request first — which Apps
+      // Script web apps can't answer, so the whole POST gets blocked
+      // before it ever reaches doPost. The body is still valid JSON text;
+      // only the declared Content-Type changes. mode stays default (cors),
+      // which is what lets us read the JSON response back (Apps Script's
+      // redirect-based response includes permissive CORS headers for
+      // plain GET/POST, just not for a preflighted request).
       const response = await fetch(GAS_ENDPOINT, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'text/plain;charset=utf-8'
         },
         body: JSON.stringify(payload)
       });
