@@ -108,7 +108,35 @@ pre{
 pre .cm{color:var(--ink-dim);}
 
 /* --- Quiz --- */
-.quiz{border:1px solid var(--grid-line);border-radius:2px;background:var(--navy-900);padding:26px 26px 30px;margin-top:34px;}
+.quiz-container{
+  border:1px solid var(--grid-line);
+  border-radius:2px;
+  background:var(--navy-900);
+  padding:26px 26px 30px;
+  margin-top:34px;
+}
+.quiz-container .quiz-content {
+  display: none;
+}
+.quiz-container .quiz-content.active {
+  display: block;
+}
+.request-btn {
+  background:var(--amber);
+  color:var(--navy-950);
+  border:none;
+  border-radius:2px;
+  padding:12px 24px;
+  font-family:'IBM Plex Mono',monospace;
+  font-weight:600;
+  font-size:14px;
+  cursor:pointer;
+  letter-spacing:.03em;
+}
+.request-btn:hover:not(:disabled){background:#ffc25e;}
+.request-btn:disabled{opacity:.5;cursor:not-allowed;}
+.loading-text{color:var(--ink-dim);font-size:14px;margin-top:10px;}
+
 .quiz-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
 .quiz-head h3{font-size:15px;color:var(--amber);text-transform:uppercase;letter-spacing:.06em;margin:0;}
 .quiz-sub{color:var(--ink-dim);font-size:12.5px;margin-bottom:18px;}
@@ -188,13 +216,12 @@ footer{padding:36px 56px;color:var(--ink-dim);font-size:12px;border-top:1px soli
 
 <script>
 /* =========================================================================
-   CONFIG — set this to your deployed Google Apps Script Web App URL.
-   See setup-instructions.md for how to create it.
+   CONFIG — Web App URL for Google Apps Script backend
 ========================================================================= */
 const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbw48BZofQ8SYHL9-aXEQZ6zzE6im904ts90Sqrmi0eLvVMiEtyu7kcbsQM2hNwMnGsrHw/exec";
 
 /* =========================================================================
-   COURSE CONTENT
+   COURSE CONTENT — Full content with all reviews, cards, R code, etc.
 ========================================================================= */
 const COURSE = [
 {
@@ -214,18 +241,6 @@ const COURSE = [
 mean(x); median(x); sd(x); IQR(x)
 boxplot(x, main = "Part diameter (mm)")
 hist(x, breaks = 5, col = "grey80")`}
-  ],
-  quiz: [
-    {q:"A sample of 40 resistors is measured for resistance. This variable is:", opts:["Categorical nominal","Categorical ordinal","Numerical discrete","Numerical continuous"], correct:3},
-    {q:"Which sampling method divides the population into subgroups and randomly samples within each?", opts:["Cluster sampling","Stratified sampling","Convenience sampling","Systematic sampling"], correct:1},
-    {q:"The sample variance formula divides by (n − 1) instead of n primarily to:", opts:["Make the formula simpler","Correct the bias of using the sample mean instead of the population mean","Match the population formula exactly","Force the variance to be an integer"], correct:1},
-    {q:"A data set has values 2, 4, 4, 4, 5, 5, 7, 9. What is the mode?", opts:["2","4","5","9"], correct:1},
-    {q:"Which measure of spread is least affected by extreme outliers?", opts:["Range","Standard deviation","IQR","Variance"], correct:2},
-    {q:"A boxplot shows a long whisker on the right with no left whisker. The distribution is:", opts:["Symmetric","Right-skewed","Left-skewed","Bimodal"], correct:1},
-    {q:"Convenience sampling in an engineering QA line (only testing the first 10 units off the line each shift) risks:", opts:["Perfectly random results","No bias since units are identical by design","Missing time-of-day or wear-related variation","Reducing measurement precision"], correct:2},
-    {q:"In R, which function returns the interquartile range directly?", opts:["range()","sd()","IQR()","var()"], correct:2},
-    {q:"A control chart's center line typically represents the:", opts:["Maximum observed value","Process mean","Upper spec limit","Sample size"], correct:1},
-    {q:"Which pair correctly matches statistic to population parameter?", opts:["x̄ estimates μ","s estimates x̄","n estimates σ","μ estimates s"], correct:0}
   ]
 },
 {
@@ -249,18 +264,6 @@ p_flag_given_ok <- 0.03
 p_flag <- p_flag_given_defect*p_defect + p_flag_given_ok*(1-p_defect)
 p_defect_given_flag <- (p_flag_given_defect*p_defect)/p_flag
 p_defect_given_flag`}
-  ],
-  quiz: [
-    {q:"If P(A) = 0.3, P(B) = 0.4, and A, B are independent, P(A∩B) equals:", opts:["0.7","0.12","0.1","0.34"], correct:1},
-    {q:"P(A|B) is read as:", opts:["Probability of A and B","Probability of A given B","Probability of A or B","Probability of A minus B"], correct:1},
-    {q:"A test for a defect has a 5% false-positive rate. This means:", opts:["5% of defective parts are missed","5% of good parts are incorrectly flagged","5% of all parts are defective","The test is 5% accurate"], correct:1},
-    {q:"Bayes' theorem is most useful when you know P(B|A) but actually want:", opts:["P(A)","P(B)","P(A|B)","P(A∩B) only"], correct:2},
-    {q:"Two events are independent if:", opts:["They cannot occur together","P(A|B) = P(A)","P(A∩B) = 0","P(A) + P(B) = 1"], correct:1},
-    {q:"C(5,2) equals:", opts:["10","20","5","120"], correct:0},
-    {q:"In a factory, 2% of parts are defective. A sensor correctly flags defects 95% of the time and false-flags good parts 3% of the time. This scenario primarily calls for:", opts:["The addition rule alone","Bayes' theorem","A permutation formula","The empirical rule"], correct:1},
-    {q:"P(A∪B) for mutually exclusive events A and B equals:", opts:["P(A)·P(B)","P(A) + P(B)","P(A) − P(B)","0"], correct:1},
-    {q:"If P(A) = 0.6, P(A′) equals:", opts:["0.6","0.4","1.6","0"], correct:1},
-    {q:"Conditional probability P(A|B) is undefined when:", opts:["P(A) = 0","P(B) = 0","A and B are independent","A and B are equal"], correct:1}
   ]
 },
 {
@@ -291,18 +294,6 @@ ppois(2, lambda = 1.5)
 
 # P(95 < X < 105) for Normal(mean=100, sd=5)
 pnorm(105, 100, 5) - pnorm(95, 100, 5)`}
-  ],
-  quiz: [
-    {q:"An inspector checks 10 independent parts, each defective with probability 0.1. The number defective follows:", opts:["Poisson","Binomial","Exponential","Normal"], correct:1},
-    {q:"The number of scratches per square meter of sheet metal, where scratches occur independently at a constant average rate, is best modeled by:", opts:["Binomial","Uniform","Poisson","Exponential"], correct:2},
-    {q:"Component lifetime with a constant failure rate (memoryless property) is typically modeled with the:", opts:["Normal distribution","Exponential distribution","Binomial distribution","Poisson distribution"], correct:1},
-    {q:"For a continuous random variable, E[X] is computed using:", opts:["A summation over all values","An integral of x·f(x)","The mode of f(x)","The maximum of f(x)"], correct:1},
-    {q:"In R, dbinom(3, size=10, prob=0.1) computes:", opts:["P(X ≤ 3)","P(X = 3)","P(X ≥ 3)","The mean of X"], correct:1},
-    {q:"Which R function gives P(X ≤ x) for a Poisson random variable?", opts:["dpois()","rpois()","ppois()","qpois()"], correct:2},
-    {q:"For X ~ Normal(100, 5), which R line computes P(95 < X < 105)?", opts:["dnorm(105,100,5) - dnorm(95,100,5)","pnorm(105,100,5) - pnorm(95,100,5)","qnorm(105,100,5)","rnorm(105,100,5)"], correct:1},
-    {q:"The variance of a discrete random variable is:", opts:["Σ x·P(x)","Σ(x − E[X])²·P(x)","∫ x·f(x) dx","The square root of the mean"], correct:1},
-    {q:"A Uniform(0,10) random variable has probability density f(x) equal to, for 0 ≤ x ≤ 10:", opts:["0.1","1","10","x/10"], correct:0},
-    {q:"Which property distinguishes the Exponential distribution and makes it natural for lifetime modeling?", opts:["It is symmetric","It is memoryless","It only takes integer values","It has bounded support"], correct:1}
   ]
 },
 {
@@ -323,18 +314,6 @@ par(mfrow = c(1,3))
 hist(pop, main = "Population (skewed)")
 hist(means_n5, main = "n = 5")
 hist(means_n50, main = "n = 50")  # visibly more Normal-shaped`}
-  ],
-  quiz: [
-    {q:"The Central Limit Theorem says the sampling distribution of x̄ is approximately Normal when:", opts:["The population itself is Normal only","n is sufficiently large, regardless of population shape","n is small","σ is known"], correct:1},
-    {q:"Standard error of the mean is calculated as:", opts:["σ · √n","σ / √n","σ²/n","σ · n"], correct:1},
-    {q:"If sample size quadruples (4×), the standard error of the mean:", opts:["Quadruples","Doubles","Halves","Stays the same"], correct:2},
-    {q:"The mean of the sampling distribution of x̄ equals:", opts:["The sample mean of one sample","The population mean μ","The population standard deviation","Zero, always"], correct:1},
-    {q:"A common rule-of-thumb sample size for the CLT approximation to be reasonable is:", opts:["n ≥ 5","n ≥ 10","n ≥ 30","n ≥ 300"], correct:2},
-    {q:"Which of these gets MORE Normal-shaped as n increases, even from a skewed population?", opts:["Each individual data point","The sampling distribution of x̄","The population distribution itself","The range of the data"], correct:1},
-    {q:"Standard deviation (of raw data) vs. standard error (of x̄) — which statement is correct?", opts:["They are always equal","SE describes variability of individual observations","SD describes variability of individual observations; SE describes variability of the sample mean","SE is always larger than SD"], correct:2},
-    {q:"In the R simulation of exponential lifetimes, why does the histogram of means look more Normal at n = 50 than n = 5?", opts:["R rounds large samples","Larger samples trigger the CLT more strongly","Exponential distributions become Normal at large n","This is a coding artifact, not a real effect"], correct:1},
-    {q:"If σ is unknown and estimated by s, the standard error becomes:", opts:["s·√n","s/√n","s²","s/n"], correct:1},
-    {q:"Why does the sampling distribution of x̄ matter for inference?", opts:["It lets us build confidence intervals and test statistics with known behavior","It replaces the need for any data collection","It only applies to Normal populations","It has no practical use in engineering"], correct:0}
   ]
 },
 {
@@ -353,18 +332,6 @@ t.test(x, conf.level = 0.95)$conf.int
 
 # Proportion CI: 18 defects out of 250 parts
 prop.test(18, 250, conf.level = 0.95)$conf.int`}
-  ],
-  quiz: [
-    {q:"A 95% confidence interval for a mean means:", opts:["95% of the data falls in this interval","There is a 95% chance μ falls in any one specific computed interval","95% of intervals constructed this way, across repeated sampling, would contain μ","The sample mean is correct 95% of the time"], correct:2},
-    {q:"For a CI on a mean with σ unknown, we use the:", opts:["Normal (z) distribution","t-distribution with n−1 df","Binomial distribution","F-distribution"], correct:1},
-    {q:"Increasing the confidence level from 90% to 99%, holding n fixed, makes the interval:", opts:["Narrower","Wider","Unchanged","Impossible to compute"], correct:1},
-    {q:"Increasing sample size n, holding confidence level fixed, makes the interval:", opts:["Wider","Narrower","Unchanged","Undefined"], correct:1},
-    {q:"A proportion CI uses which standard error formula?", opts:["s/√n","√(p̂(1−p̂)/n)","σ/n","s²/n"], correct:1},
-    {q:"In R, t.test(x)$conf.int returns:", opts:["A hypothesis test p-value only","A confidence interval for the mean","The sample variance","A vector of t-scores"], correct:1},
-    {q:"18 out of 250 inspected parts are defective. To get a CI for the true defect proportion in R, you would use:", opts:["t.test()","prop.test(18, 250)","binom(18,250)","lm(18~250)"], correct:1},
-    {q:"Margin of error is defined as:", opts:["The full width of the confidence interval","Half the width of the confidence interval","The sample standard deviation","The critical value alone"], correct:1},
-    {q:"To reduce the margin of error by half (roughly), holding everything else fixed, you'd need to:", opts:["Double the sample size","Quadruple the sample size","Halve the sample size","Change the confidence level to 90%"], correct:1},
-    {q:"This course does NOT cover confidence intervals for which parameter?", opts:["Population mean","Population proportion","Population variance","None — all listed are covered"], correct:2}
   ]
 },
 {
@@ -392,18 +359,6 @@ t.test(line_A, line_B)          # var.equal = FALSE by default
 
 # One-sample proportion test
 prop.test(18, 250, p = 0.05)`}
-  ],
-  quiz: [
-    {q:"A Type I error occurs when:", opts:["We fail to reject a false H₀","We reject a true H₀","We reject a false H₀","We correctly fail to reject H₀"], correct:1},
-    {q:"By default, R's t.test() for two samples:", opts:["Assumes equal variances (pooled t-test)","Uses Welch's t-test (unequal variances)","Requires you to specify variances manually","Only works for one sample at a time"], correct:1},
-    {q:"This course's default approach to comparing two means is:", opts:["Pooled t-test, assuming equal variances","Welch's t-test, not assuming equal variances","A z-test always","ANOVA, even for two groups"], correct:1},
-    {q:"A small p-value (e.g., 0.01) with α = 0.05 leads you to:", opts:["Fail to reject H₀","Reject H₀","Accept H₀ as true","Increase α"], correct:1},
-    {q:"Power (1 − β) is the probability of:", opts:["Making a Type I error","Correctly rejecting a false H₀","Correctly failing to reject a true H₀","Making a Type II error"], correct:1},
-    {q:"In this course, power calculations are performed by:", opts:["Hand-deriving the noncentral t-distribution","Using an online power/sample-size calculator app","R's t.test() output directly","They are not covered at all"], correct:1},
-    {q:"To test whether a single mean equals a target value in R, you use:", opts:["t.test(x, mu = target)","prop.test(x)","lm(x ~ 1)","aov(x ~ 1)"], correct:0},
-    {q:"Welch's t-test adjusts which two things compared to the pooled t-test?", opts:["Only the p-value","Standard error and degrees of freedom","Only the sample size","Nothing — they are identical tests"], correct:1},
-    {q:"A Type II error occurs when:", opts:["We reject a true H₀","We fail to reject a false H₀","We reject a false H₀","p-value equals α exactly"], correct:1},
-    {q:"Two production lines' mean fill weights are compared with unequal sample variances (s₁² = 0.5, s₂² = 3.1). The appropriate test is:", opts:["Pooled two-sample t-test","Welch's two-sample t-test","One-sample t-test","Chi-square test"], correct:1}
   ]
 },
 {
@@ -420,18 +375,6 @@ supplier <- factor(rep(c("A","B","C","D"), each = 3))
 fit <- aov(strength ~ supplier)
 summary(fit)
 TukeyHSD(fit)`}
-  ],
-  quiz: [
-    {q:"One-way ANOVA is used to compare:", opts:["Two means only","Three or more group means simultaneously","Two variances","Two proportions"], correct:1},
-    {q:"The null hypothesis in one-way ANOVA states:", opts:["All group variances are equal","All group means are equal","At least one mean differs","The sample sizes are equal"], correct:1},
-    {q:"The F-statistic in ANOVA is the ratio of:", opts:["Within-group variance to between-group variance","Between-group variance to within-group variance","Sample mean to sample SD","Total variance to sample size"], correct:1},
-    {q:"A significant ANOVA F-test (reject H₀) tells you:", opts:["Exactly which groups differ","At least one group mean differs from the others","All groups are different from each other","The data is Normally distributed"], correct:1},
-    {q:"To find out WHICH specific groups differ after a significant ANOVA, you would use:", opts:["Another F-test","A post-hoc test like Tukey's HSD","A chi-square test","Nothing further is needed"], correct:1},
-    {q:"Why not just run multiple pairwise t-tests instead of ANOVA?", opts:["t-tests are computationally slower","Multiple t-tests inflate the overall Type I error rate","t-tests cannot compare numeric data","ANOVA and multiple t-tests always give identical error rates"], correct:1},
-    {q:"In R, the function used to fit a one-way ANOVA model is:", opts:["t.test()","aov()","prop.test()","lm.fit()"], correct:1},
-    {q:"TukeyHSD() in R is used for:", opts:["Fitting the initial ANOVA model","Pairwise post-hoc comparisons after ANOVA","Computing a confidence interval for one mean","Testing normality of residuals"], correct:1},
-    {q:"Comparing strength measurements from 4 material suppliers (A, B, C, D) calls for:", opts:["A two-sample t-test","One-way ANOVA","A proportion test","Simple linear regression"], correct:1},
-    {q:"summary(aov(...)) in R reports which key value used to make the decision?", opts:["The sample mean","The p-value associated with the F-statistic","The correlation coefficient","The standard error of the median"], correct:1}
   ]
 },
 {
@@ -450,18 +393,6 @@ fit <- lm(reading ~ voltage)
 summary(fit)
 plot(voltage, reading); abline(fit)
 plot(fit, which = 1)   # residuals vs fitted`}
-  ],
-  quiz: [
-    {q:"The correlation coefficient r ranges over:", opts:["0 to 1","−1 to 1","−∞ to ∞","0 to 100"], correct:1},
-    {q:"R² represents:", opts:["The correlation coefficient itself","The slope of the regression line","The proportion of variance in y explained by x","The residual standard error"], correct:2},
-    {q:"The least-squares line minimizes:", opts:["The sum of residuals","The sum of squared residuals","The maximum residual","The correlation coefficient"], correct:1},
-    {q:"In R, the function used to fit simple linear regression is:", opts:["aov()","lm()","t.test()","cor.test()"], correct:1},
-    {q:"A residual is defined as:", opts:["ŷ − x̄","y − ŷ","x − x̄","ŷ − ȳ"], correct:1},
-    {q:"A residual-vs-fitted plot showing a clear curved pattern suggests:", opts:["The model fits perfectly","A linear model may be inappropriate","R² must be exactly 1","The sample size is too large"], correct:1},
-    {q:"A calibration curve with r = 0.98 indicates:", opts:["A weak linear relationship","A strong positive linear relationship","A strong negative linear relationship","No relationship at all"], correct:1},
-    {q:"In ŷ = b₀ + b₁x, b₁ represents:", opts:["The y-intercept","The predicted value at x = 0","The change in ŷ for a one-unit increase in x","The correlation coefficient"], correct:2},
-    {q:"Which R command adds the fitted regression line to an existing scatterplot?", opts:["lines(fit)","abline(fit)","plot(fit)","points(fit)"], correct:1},
-    {q:"An R² of 0.85 means:", opts:["85% of individual points are correctly predicted","85% of the variability in y is explained by x","The correlation is 0.85 squared","The slope equals 0.85"], correct:1}
   ]
 },
 {
@@ -491,24 +422,12 @@ posterior_mean; credible_interval
 
 # P(true defect rate > 0.05 | data)
 1 - pbeta(0.05, a1, b1)`}
-  ],
-  quiz: [
-    {q:"In Bayesian statistics, the parameter θ is treated as:", opts:["A fixed, unknown constant only","A random variable with its own probability distribution","Always Normally distributed","Irrelevant to the analysis"], correct:1},
-    {q:"The prior distribution represents:", opts:["The distribution of the data","Belief about the parameter before observing data","The likelihood function","The final answer after analysis"], correct:1},
-    {q:"Bayes' theorem for updating combines the prior with the:", opts:["Sample size only","Likelihood of the observed data","Confidence level","Standard error"], correct:1},
-    {q:"A conjugate prior is useful because:", opts:["It always equals the likelihood","The resulting posterior is in the same distribution family as the prior","It removes the need for any data","It guarantees a Normal posterior always"], correct:1},
-    {q:"For a Binomial likelihood (defect counts), the conjugate prior is the:", opts:["Normal distribution","Beta distribution","Poisson distribution","Exponential distribution"], correct:1},
-    {q:"With prior Beta(a,b) and observing s successes in n trials, the posterior is:", opts:["Beta(a, b)","Beta(a+s, b+n-s)","Beta(s, n-s)","Normal(a+s, b+n-s)"], correct:1},
-    {q:"A 95% credible interval means:", opts:["95% of future samples will fall in this range","There is a 95% posterior probability the parameter lies in this range","95% of the prior distribution lies in this range","The same thing as a p-value"], correct:1},
-    {q:"Compared to a frequentist confidence interval, a credible interval's interpretation is:", opts:["Identical in all cases","More directly aligned with the common (but incorrect) intuitive reading of a CI","Never usable for real data","Only valid for large samples"], correct:1},
-    {q:"In R, qbeta(c(0.025, 0.975), a1, b1) is used to compute:", opts:["The prior mean","A 95% credible interval from the posterior","A p-value","The likelihood function"], correct:1},
-    {q:"Bayesian hypothesis testing about a defect rate θ might directly compute:", opts:["A t-statistic","P(θ > 0.05 | data) from the posterior","The sample range","An ANOVA F-statistic"], correct:1}
   ]
 }
 ];
 
 /* =========================================================================
-   RENDERING
+   RENDER PAGE
 ========================================================================= */
 const nav = document.getElementById('chapter-nav');
 const content = document.getElementById('content');
@@ -523,7 +442,7 @@ COURSE.forEach((ch, i) => {
   a.innerHTML = `<span class="idx">${idx}</span> ${ch.title}` + (ch.optional ? `<span class="opt-flag">OPT</span>` : '');
   nav.appendChild(a);
 
-  // chapter section
+  // chapter section with cards + quiz container
   const sec = document.createElement('section');
   sec.className = 'chapter';
   sec.id = ch.id;
@@ -542,10 +461,19 @@ COURSE.forEach((ch, i) => {
     </div>
     <p class="obj">${ch.objectives}</p>
     ${cardsHtml}
-    <div class="quiz" id="quiz-${ch.id}"></div>
+    <div class="quiz-container" id="quiz-container-${ch.id}">
+      <div style="text-align:center;padding:20px 0;">
+        <button class="request-btn" id="request-${ch.id}">📝 Request Quiz</button>
+        <div class="loading-text" id="loading-${ch.id}" style="display:none;">Loading quiz...</div>
+      </div>
+      <div class="quiz-content" id="quiz-content-${ch.id}">
+        <div id="quiz-${ch.id}"></div>
+      </div>
+    </div>
   `;
   content.appendChild(sec);
 
+  // Render KaTeX formulas
   ch.cards.forEach((c, ci) => {
     if (!c.formula) return;
     const el = document.getElementById(`formula-${ch.id}-${ci}`);
@@ -554,44 +482,86 @@ COURSE.forEach((ch, i) => {
     }
   });
 
-  renderQuiz(ch);
+  // Add request quiz event listener
+  document.getElementById(`request-${ch.id}`).addEventListener('click', () => {
+    requestQuiz(ch.id);
+  });
 });
 
-function renderQuiz(ch) {
-  const container = document.getElementById(`quiz-${ch.id}`);
-  const answers = new Array(ch.quiz.length).fill(null);
+/* =========================================================================
+   REQUEST QUIZ FROM SERVER
+========================================================================= */
+async function requestQuiz(chapterId) {
+  const btn = document.getElementById(`request-${chapterId}`);
+  const loading = document.getElementById(`loading-${chapterId}`);
+  const quizContent = document.getElementById(`quiz-content-${chapterId}`);
+  
+  btn.disabled = true;
+  loading.style.display = 'block';
+  
+  try {
+    const response = await fetch(`${GAS_ENDPOINT}?chapter=${chapterId}`, {
+      method: 'GET'
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'ok') {
+      renderQuiz(data.quiz, chapterId);
+      quizContent.classList.add('active');
+      btn.style.display = 'none';
+      loading.style.display = 'none';
+    } else {
+      throw new Error(data.message || 'Failed to load quiz');
+    }
+  } catch (err) {
+    loading.textContent = 'Error loading quiz: ' + err.message;
+    loading.style.color = 'var(--wrong)';
+    btn.disabled = false;
+  }
+}
 
-  const qHtml = ch.quiz.map((q, qi) => `
+/* =========================================================================
+   RENDER QUIZ (populated from server response)
+========================================================================= */
+function renderQuiz(quiz, chapterId) {
+  const container = document.getElementById(`quiz-${chapterId}`);
+  const answers = new Array(quiz.questions.length).fill(null);
+  
+  const qHtml = quiz.questions.map((q, qi) => `
     <div class="q-block">
-      <div class="q-text"><span class="q-num">Q${String(qi+1).padStart(2,'0')}</span>${q.q}</div>
+      <div class="q-text"><span class="q-num">Q${String(qi+1).padStart(2,'0')}</span>${q.question}</div>
       <div class="opts" data-qi="${qi}">
-        ${q.opts.map((opt, oi) => `
+        ${q.options.map((opt, oi) => `
           <label class="opt" data-oi="${oi}">
-            <input type="radio" name="${ch.id}-q${qi}" value="${oi}">
+            <input type="radio" name="${chapterId}-q${qi}" value="${oi}">
             <span>${opt}</span>
-          </label>`).join('')}
+          </label>
+        `).join('')}
       </div>
     </div>
   `).join('');
-
+  
   container.innerHTML = `
     <div class="quiz-head">
-      <h3>Chapter Check — 10 Questions</h3>
-      <span class="score-pill" id="score-${ch.id}"></span>
+      <h3>Chapter Check — ${quiz.questions.length} Questions</h3>
+      <span class="score-pill" id="score-${chapterId}"></span>
     </div>
     <div class="quiz-sub">Select one answer per question, enter your name/ID, then submit. Your response is sent to the instructor's roster sheet.</div>
     ${qHtml}
     <div class="quiz-footer">
-      <input type="text" class="name-field" id="name-${ch.id}" placeholder="Last 4 digits of student ID" maxlength="4" inputmode="numeric" pattern="[0-9]{4}">
-      <button class="submit-btn" id="submit-${ch.id}">SUBMIT RESPONSES</button>
-      <span class="status-msg" id="status-${ch.id}"></span>
+      <input type="text" class="name-field" id="name-${chapterId}" placeholder="Last 4 digits of student ID" maxlength="4" inputmode="numeric" pattern="[0-9]{4}">
+      <button class="submit-btn" id="submit-${chapterId}">SUBMIT RESPONSES</button>
+      <span class="status-msg" id="status-${chapterId}"></span>
     </div>
   `;
-
-  document.getElementById(`name-${ch.id}`).addEventListener('input', (e) => {
+  
+  // Student ID input validation
+  document.getElementById(`name-${chapterId}`).addEventListener('input', (e) => {
     e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
   });
-
+  
+  // Option selection
   container.querySelectorAll('.opt').forEach(label => {
     label.addEventListener('click', () => {
       const qi = parseInt(label.parentElement.dataset.qi);
@@ -601,13 +571,14 @@ function renderQuiz(ch) {
       label.classList.add('selected');
     });
   });
-
-  document.getElementById(`submit-${ch.id}`).addEventListener('click', async () => {
-    const nameField = document.getElementById(`name-${ch.id}`);
-    const status = document.getElementById(`status-${ch.id}`);
-    const btn = document.getElementById(`submit-${ch.id}`);
-    const scorePill = document.getElementById(`score-${ch.id}`);
-
+  
+  // Submit
+  document.getElementById(`submit-${chapterId}`).addEventListener('click', async () => {
+    const nameField = document.getElementById(`name-${chapterId}`);
+    const status = document.getElementById(`status-${chapterId}`);
+    const btn = document.getElementById(`submit-${chapterId}`);
+    const scorePill = document.getElementById(`score-${chapterId}`);
+    
     if (!/^\d{4}$/.test(nameField.value.trim())) {
       status.textContent = 'Enter the last 4 digits of your student ID (numbers only).';
       status.className = 'status-msg err';
@@ -618,59 +589,34 @@ function renderQuiz(ch) {
       status.className = 'status-msg err';
       return;
     }
-
-    // Resubmissions are allowed (e.g. to retake and improve). Only the
-    // earliest submission per student per chapter counts toward the
-    // instructor's reports — that's tracked server-side, not here.
-
-    // local score, shown to the student only — the instructor's copy of
-    // record is the answer key kept in a separate sheet server-side
-    let correctCount = 0;
-    answers.forEach((a, qi) => { if (a === ch.quiz[qi].correct) correctCount++; });
-
+    
     btn.disabled = true;
-    status.textContent = 'Submitting…';
+    status.textContent = 'Submitting...';
     status.className = 'status-msg';
-
+    
     const payload = {
-      chapter: ch.id,
-      chapterTitle: ch.title,
+      chapter: chapterId,
       student: nameField.value.trim(),
       timestamp: new Date().toISOString(),
       answers: answers
     };
-
+    
     try {
-      if (!GAS_ENDPOINT.startsWith('http')) {
-        status.textContent = 'Not sent — GAS_ENDPOINT is not configured in index.html yet.';
-        status.className = 'status-msg err';
-        btn.disabled = false;
-        console.warn('GAS_ENDPOINT not configured — response not sent.', payload);
-        return;
-      }
-
       await fetch(GAS_ENDPOINT, {
         method: 'POST',
-        mode: 'no-cors',           // Apps Script web apps don't return CORS headers
+        mode: 'no-cors',
         headers: {'Content-Type': 'text/plain'},
         body: JSON.stringify(payload)
       });
-
-      // reveal correct/incorrect styling locally
-      container.querySelectorAll('.opts').forEach(optsDiv => {
-        const qi = parseInt(optsDiv.dataset.qi);
-        const correctOi = ch.quiz[qi].correct;
-        optsDiv.querySelectorAll('.opt').forEach(l => {
-          const oi = parseInt(l.dataset.oi);
-          if (oi === correctOi) l.classList.add('correct');
-          else if (oi === answers[qi]) l.classList.add('incorrect');
-        });
-      });
-
+      
+      // Since we're using no-cors, we can't read the response
+      // Just show success
       scorePill.style.display = 'inline-block';
-      scorePill.textContent = `${correctCount}/10 correct`;
-      status.textContent = 'Submitted.';
+      scorePill.textContent = '✓ Submitted!';
+      status.textContent = 'Quiz submitted successfully.';
       status.className = 'status-msg ok';
+      btn.disabled = true;
+      
     } catch (err) {
       status.textContent = 'Could not submit — check your connection and try again.';
       status.className = 'status-msg err';
@@ -679,7 +625,7 @@ function renderQuiz(ch) {
   });
 }
 
-// active nav highlighting
+// ==================== NAV SCROLL HIGHLIGHTING ====================
 const sections = document.querySelectorAll('.chapter');
 const navLinks = document.querySelectorAll('#chapter-nav a');
 window.addEventListener('scroll', () => {
