@@ -572,7 +572,7 @@ function renderQuiz(quiz, chapterId) {
     });
   });
   
-  // Submit
+  // Submit - FIXED VERSION
   document.getElementById(`submit-${chapterId}`).addEventListener('click', async () => {
     const nameField = document.getElementById(`name-${chapterId}`);
     const status = document.getElementById(`status-${chapterId}`);
@@ -602,23 +602,27 @@ function renderQuiz(quiz, chapterId) {
     };
     
     try {
-      await fetch(GAS_ENDPOINT, {
+      // FIXED: Removed mode: 'no-cors', changed to application/json
+      const response = await fetch(GAS_ENDPOINT, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: {'Content-Type': 'text/plain'},
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(payload)
       });
       
-      // Since we're using no-cors, we can't read the response
-      // Just show success
-      scorePill.style.display = 'inline-block';
-      scorePill.textContent = '✓ Submitted!';
-      status.textContent = 'Quiz submitted successfully.';
-      status.className = 'status-msg ok';
-      btn.disabled = true;
+      const result = await response.json();
+      
+      if (result.status === 'ok') {
+        scorePill.style.display = 'inline-block';
+        scorePill.textContent = result.score + '/' + result.total + ' correct';
+        status.textContent = '✓ Quiz submitted successfully!';
+        status.className = 'status-msg ok';
+        btn.disabled = true;
+      } else {
+        throw new Error(result.message || 'Submission failed');
+      }
       
     } catch (err) {
-      status.textContent = 'Could not submit — check your connection and try again.';
+      status.textContent = 'Error: ' + err.message;
       status.className = 'status-msg err';
       btn.disabled = false;
     }
