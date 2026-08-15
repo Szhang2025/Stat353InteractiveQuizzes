@@ -572,20 +572,23 @@ function renderQuiz(quiz, chapterId) {
     });
   });
   
-  // Submit - FIXED VERSION
+  // ==================== SUBMIT - FIXED VERSION ====================
   document.getElementById(`submit-${chapterId}`).addEventListener('click', async () => {
     const nameField = document.getElementById(`name-${chapterId}`);
     const status = document.getElementById(`status-${chapterId}`);
     const btn = document.getElementById(`submit-${chapterId}`);
     const scorePill = document.getElementById(`score-${chapterId}`);
     
+    // Validate student ID
     if (!/^\d{4}$/.test(nameField.value.trim())) {
       status.textContent = 'Enter the last 4 digits of your student ID (numbers only).';
       status.className = 'status-msg err';
       return;
     }
+    
+    // Validate all questions answered
     if (answers.includes(null)) {
-      status.textContent = 'Answer all 10 questions before submitting.';
+      status.textContent = 'Answer all ' + answers.length + ' questions before submitting.';
       status.className = 'status-msg err';
       return;
     }
@@ -601,15 +604,20 @@ function renderQuiz(quiz, chapterId) {
       answers: answers
     };
     
+    console.log('📤 Sending payload:', payload);
+    
     try {
-      // FIXED: Removed mode: 'no-cors', changed to application/json
+      // FIXED: Removed mode: 'no-cors', using proper JSON
       const response = await fetch(GAS_ENDPOINT, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(payload)
       });
       
       const result = await response.json();
+      console.log('📥 Response:', result);
       
       if (result.status === 'ok') {
         scorePill.style.display = 'inline-block';
@@ -617,11 +625,15 @@ function renderQuiz(quiz, chapterId) {
         status.textContent = '✓ Quiz submitted successfully!';
         status.className = 'status-msg ok';
         btn.disabled = true;
+        
+        // Show correct/incorrect for each question
+        // Note: This would require the server to return which questions were correct
       } else {
         throw new Error(result.message || 'Submission failed');
       }
       
     } catch (err) {
+      console.error('❌ Error:', err);
       status.textContent = 'Error: ' + err.message;
       status.className = 'status-msg err';
       btn.disabled = false;
