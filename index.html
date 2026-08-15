@@ -6,6 +6,8 @@
 <title>STAT 353 — Statistics for Engineers</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <style>
 :root{
   --navy-950:#081321;
@@ -95,7 +97,9 @@ nav .opt-flag{font-size:9px;color:var(--amber);border:1px solid var(--amber);pad
 .card h3{font-size:14px;margin:0 0 10px;color:var(--cyan);text-transform:uppercase;letter-spacing:.06em;}
 .card p, .card li{font-size:14.5px;color:var(--ink);}
 .card ul{margin:0;padding-left:20px;}
-.formula{font-family:'IBM Plex Mono',monospace;background:var(--navy-800);border:1px solid var(--grid-line);padding:10px 14px;border-radius:2px;font-size:14px;color:var(--amber);overflow-x:auto;margin:10px 0;}
+.formula{background:var(--navy-800);border:1px solid var(--grid-line);padding:14px 16px;border-radius:2px;overflow-x:auto;margin:10px 0;color:var(--amber);}
+.formula .katex{color:var(--amber);font-size:1.08em;}
+.formula .katex-display{margin:0;text-align:left;}
 
 pre{
   background:var(--navy-800);border:1px solid var(--grid-line);border-radius:2px;
@@ -187,7 +191,7 @@ footer{padding:36px 56px;color:var(--ink-dim);font-size:12px;border-top:1px soli
    CONFIG — set this to your deployed Google Apps Script Web App URL.
    See setup-instructions.md for how to create it.
 ========================================================================= */
-const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyUDrhsSUyDdl4gQZv3ZetzGvhl-zGrkyOBsTgwmBRA2J1zouQ9mzhohwlVMAFQk4VPIw/exec";
+const GAS_ENDPOINT = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
 
 /* =========================================================================
    COURSE CONTENT
@@ -204,7 +208,7 @@ const COURSE = [
       <li>Sampling: simple random, stratified, cluster, convenience — and why convenience sampling biases engineering QA data</li>
     </ul>`},
     {h:"Center & spread", body:`<p>Mean, median, mode; range, variance, standard deviation, interquartile range (IQR).</p>`,
-     formula:"s² = Σ(xᵢ − x̄)² / (n − 1)&nbsp;&nbsp;&nbsp;&nbsp;s = √(s²)"},
+     formula:"s^2 = \\dfrac{\\sum (x_i - \\bar{x})^2}{n-1} \\qquad s = \\sqrt{s^2}"},
     {h:"Visualizing data", body:`<p>Histograms, boxplots, scatterplots. For engineers: run charts and basic control-chart thinking (center line, ±3σ limits) as an early preview of process monitoring.</p>`},
     {h:"R", code:`x <- c(12.1, 11.9, 12.4, 12.0, 11.8, 12.3, 12.2)
 mean(x); median(x); sd(x); IQR(x)
@@ -235,9 +239,9 @@ hist(x, breaks = 5, col = "grey80")`}
       <li>Independence: P(A∩B) = P(A)·P(B)</li>
     </ul>`},
     {h:"Conditional probability & Bayes", body:`<p>Central to reliability testing and inspection: given a sensor flags a defect, what's the probability the part is actually defective?</p>`,
-     formula:"P(A|B) = P(B|A)·P(A) / P(B)"},
+     formula:"P(A \\mid B) = \\dfrac{P(B \\mid A)\\,P(A)}{P(B)}"},
     {h:"Counting", body:`<p>Permutations and combinations, used sparingly — mainly to set up binomial probabilities in the next chapter.</p>`,
-     formula:"C(n,k) = n! / (k!(n−k)!)"},
+     formula:"C(n,k) = \\dfrac{n!}{k!\\,(n-k)!}"},
     {h:"R", code:`# Bayes' theorem: defect detection
 p_defect <- 0.02
 p_flag_given_defect <- 0.95
@@ -268,9 +272,9 @@ p_defect_given_flag`}
       <li><b>Bernoulli / Binomial</b> — pass/fail inspection outcomes over n trials</li>
       <li><b>Poisson</b> — count of defects per unit area/time (e.g. flaws per meter of cable)</li>
     </ul>`,
-     formula:"E[X] = Σ x·P(x)&nbsp;&nbsp;&nbsp;&nbsp;Var(X) = Σ (x−E[X])²·P(x)"},
+     formula:"E[X] = \\sum x\\,P(x) \\qquad \\text{Var}(X) = \\sum (x - E[X])^2\\,P(x)"},
     {h:"Continuous distributions", body:`<p>For continuous X, E[X] and Var(X) are integrals — this is the one place Calc I tools show up directly:</p>`,
-     formula:"E[X] = ∫ x·f(x) dx"},
+     formula:"E[X] = \\int x\\,f(x)\\,dx"},
     {h:"Key continuous models", body:`<ul>
       <li><b>Uniform</b> — equally likely outcomes over an interval</li>
       <li><b>Exponential</b> — time between failures / component lifetime (memoryless)</li>
@@ -307,7 +311,7 @@ pnorm(105, 100, 5) - pnorm(95, 100, 5)`}
   objectives: "Explain why sample means behave predictably even when the population doesn't, and quantify that behavior with standard error.",
   cards: [
     {h:"Sampling distribution of the mean", body:`<p>If we repeatedly draw samples of size n and compute x̄ each time, those x̄ values form their own distribution — the sampling distribution.</p>`,
-     formula:"μ_x̄ = μ&nbsp;&nbsp;&nbsp;&nbsp;σ_x̄ = σ/√n"},
+     formula:"\\mu_{\\bar{x}} = \\mu \\qquad \\sigma_{\\bar{x}} = \\dfrac{\\sigma}{\\sqrt{n}}"},
     {h:"Central Limit Theorem", body:`<p>For sufficiently large n (rule of thumb: n ≥ 30), the sampling distribution of x̄ is approximately Normal — <i>regardless of the shape of the population</i>. This is the theoretical foundation for nearly everything in the rest of the course.</p>`},
     {h:"Standard error", body:`<p>The standard deviation of the sampling distribution, σ/√n (or s/√n when σ is unknown), quantifies how much x̄ jitters from sample to sample. Larger n → smaller SE → more precise estimate of μ.</p>`},
     {h:"R — simulate the CLT", code:`# Population: strongly right-skewed (exponential lifetimes)
@@ -340,9 +344,9 @@ hist(means_n50, main = "n = 50")  # visibly more Normal-shaped`}
   cards: [
     {h:"Point vs. interval estimation", body:`<p>A point estimate (x̄ or p̂) is a single best guess; a confidence interval expresses the uncertainty around it.</p>`},
     {h:"CI for a mean (σ unknown — the usual case)", body:`<p>Uses the t-distribution with n − 1 degrees of freedom.</p>`,
-     formula:"x̄ ± t*(α/2, n−1) · s/√n"},
+     formula:"\\bar{x} \\pm t^{*}_{\\alpha/2,\\,n-1} \\cdot \\dfrac{s}{\\sqrt{n}}"},
     {h:"CI for a proportion", body:`<p>Used for pass/fail or defect-rate data.</p>`,
-     formula:"p̂ ± z*(α/2) · √(p̂(1−p̂)/n)"},
+     formula:"\\hat{p} \\pm z^{*}_{\\alpha/2} \\cdot \\sqrt{\\dfrac{\\hat{p}(1-\\hat{p})}{n}}"},
     {h:"Sample size planning", body:`<p>Rearranging the margin-of-error formula lets you solve for the n needed to hit a target precision — useful when designing a QA sampling plan.</p>`},
     {h:"R", code:`x <- c(50.1, 49.8, 50.4, 50.0, 49.7, 50.2, 50.3, 49.9)
 t.test(x, conf.level = 0.95)$conf.int
@@ -375,7 +379,7 @@ prop.test(18, 250, conf.level = 0.95)$conf.int`}
     </ul>`},
     {h:"One-sample tests", body:`<p>One-sample t-test for a mean; one-sample z-test for a proportion.</p>`},
     {h:"Two-sample mean comparison — Welch's t-test", body:`<p><b>This course does not assume equal population variances.</b> The default two-sample comparison of means is <b>Welch's t-test</b>, which adjusts both the standard error and the degrees of freedom to account for unequal variances. It is the safer default and is what R uses unless you explicitly request otherwise.</p>`,
-     formula:"t = (x̄₁ − x̄₂) / √(s₁²/n₁ + s₂²/n₂)"},
+     formula:"t = \\dfrac{\\bar{x}_1 - \\bar{x}_2}{\\sqrt{\\dfrac{s_1^2}{n_1} + \\dfrac{s_2^2}{n_2}}}"},
     {h:"Statistical power", body:`<p>Power = 1 − β, the probability of correctly detecting a real effect. <b>We do not hand-compute power in this course</b> — use a dedicated online power/sample-size calculator (JavaScript app, provided separately by your instructor) to explore how power changes with effect size, α, and n.</p>`},
     {h:"R", code:`# One-sample t-test: is mean diameter 12.0mm?
 x <- c(12.1, 11.9, 12.4, 12.0, 11.8, 12.3, 12.2)
@@ -409,7 +413,7 @@ prop.test(18, 250, p = 0.05)`}
   cards: [
     {h:"Why not just run many t-tests?", body:`<p>Running repeated pairwise t-tests inflates the overall Type I error rate. ANOVA tests all group means simultaneously with a single F-test.</p>`},
     {h:"Logic of ANOVA", body:`<p>Partition total variability into between-group and within-group components.</p>`,
-     formula:"F = MS_between / MS_within"},
+     formula:"F = \\dfrac{MS_{\\text{between}}}{MS_{\\text{within}}}"},
     {h:"Hypotheses", body:`<p>H₀: μ₁ = μ₂ = ... = μₖ&nbsp;&nbsp; vs.&nbsp;&nbsp; Hₐ: at least one mean differs. A significant F-test tells you <i>that</i> a difference exists, not <i>which</i> groups differ — that requires post-hoc comparisons (e.g., Tukey's HSD).</p>`},
     {h:"R", code:`strength <- c(220,225,218,230,240,238,242,245,210,215,208,212)
 supplier <- factor(rep(c("A","B","C","D"), each = 3))
@@ -437,7 +441,7 @@ TukeyHSD(fit)`}
   cards: [
     {h:"Correlation", body:`<p>Measures the strength and direction of a <i>linear</i> relationship between two numeric variables, −1 ≤ r ≤ 1.</p>`},
     {h:"Least-squares line", body:`<p>Minimizes the sum of squared residuals — a natural place to connect back to Calc I (minimizing a function via its derivative), even though R fits it for you.</p>`,
-     formula:"ŷ = b₀ + b₁x"},
+     formula:"\\hat{y} = b_0 + b_1 x"},
     {h:"R² — coefficient of determination", body:`<p>The proportion of variability in y explained by the linear relationship with x.</p>`},
     {h:"Residual diagnostics", body:`<p>Plot residuals vs. fitted values to check for non-linearity, non-constant variance, or outliers before trusting the model — critical for calibration curves and sensor data.</p>`},
     {h:"R", code:`voltage <- c(1,2,3,4,5,6)
@@ -467,10 +471,10 @@ plot(fit, which = 1)   # residuals vs fitted`}
   objectives: "Introduce the Bayesian alternative to the frequentist framework: priors, posteriors, conjugate updating, credible intervals, and Bayesian hypothesis testing.",
   cards: [
     {h:"The Bayesian idea", body:`<p>Treat the parameter itself (e.g. a defect rate θ) as having a probability distribution reflecting our uncertainty, and update that distribution as data arrive.</p>`,
-     formula:"posterior ∝ likelihood × prior"},
+     formula:"\\text{posterior} \\propto \\text{likelihood} \\times \\text{prior}"},
     {h:"Prior & posterior", body:`<p>The <b>prior</b> encodes belief before seeing data; the <b>posterior</b> is the updated belief after observing data, combining prior and likelihood via Bayes' theorem.</p>`},
     {h:"Conjugate priors", body:`<p>A conjugate prior produces a posterior in the same distributional family, avoiding heavy computation — the natural first example is the <b>Beta-Binomial</b> model for a defect rate:</p>`,
-     formula:"θ ~ Beta(a, b)  →  θ | data ~ Beta(a + successes, b + failures)"},
+     formula:"\\theta \\sim \\text{Beta}(a, b) \\;\\longrightarrow\\; \\theta \\mid \\text{data} \\sim \\text{Beta}(a + \\text{successes},\\; b + \\text{failures})"},
     {h:"Credible intervals", body:`<p>A 95% credible interval is a range that directly contains the parameter with 95% posterior probability — a more intuitive statement than a frequentist confidence interval, which many students initially (and incorrectly) interpret this way.</p>`},
     {h:"Bayesian hypothesis testing", body:`<p>Compare posterior probabilities of competing hypotheses directly (e.g., P(θ > 0.05 | data)), rather than relying on a p-value against a fixed null.</p>`},
     {h:"R — Beta-Binomial update", code:`# Prior belief: defect rate around 5%, moderate confidence
@@ -524,11 +528,11 @@ COURSE.forEach((ch, i) => {
   sec.className = 'chapter';
   sec.id = ch.id;
 
-  let cardsHtml = ch.cards.map(c => {
+  let cardsHtml = ch.cards.map((c, ci) => {
     if (c.code) {
       return `<div class="card"><h3>${c.h}</h3><pre>${c.code.replace(/</g,'&lt;')}</pre></div>`;
     }
-    return `<div class="card"><h3>${c.h}</h3>${c.body || ''}${c.formula ? `<div class="formula">${c.formula}</div>` : ''}</div>`;
+    return `<div class="card"><h3>${c.h}</h3>${c.body || ''}${c.formula ? `<div class="formula" id="formula-${ch.id}-${ci}"></div>` : ''}</div>`;
   }).join('');
 
   sec.innerHTML = `
@@ -541,6 +545,14 @@ COURSE.forEach((ch, i) => {
     <div class="quiz" id="quiz-${ch.id}"></div>
   `;
   content.appendChild(sec);
+
+  ch.cards.forEach((c, ci) => {
+    if (!c.formula) return;
+    const el = document.getElementById(`formula-${ch.id}-${ci}`);
+    if (el && window.katex) {
+      katex.render(c.formula, el, { throwOnError: false, displayMode: true });
+    }
+  });
 
   renderQuiz(ch);
 });
